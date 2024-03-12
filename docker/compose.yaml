@@ -8,6 +8,8 @@ services:
       - "3306:3306"
     environment:
       - MARIADB_ROOT_PASSWORD=Some.Real.Secr3t
+    volumes:
+      - ./m183_lb2.sql:/docker-entrypoint-initdb.d/m183_lb2.sql
   web:
     build: .
     container_name: m183-lb2-web
@@ -17,5 +19,5 @@ services:
       - "80:80"
     volumes:
       - type: bind
-        source: C:\M183
+        source: ./../todo-list
         target: /var/www/html
