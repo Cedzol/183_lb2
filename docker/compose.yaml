@@ -8,6 +8,7 @@ services:
       - "3306:3306"
     environment:
       - MARIADB_ROOT_PASSWORD=Some.Real.Secr3t
+      - MYSQL_DATABASE=m183_lb2
     volumes:
       - ./m183_lb2.sql:/docker-entrypoint-initdb.d/m183_lb2.sql
   web:
