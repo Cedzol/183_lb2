@@ -1,0 +1,1 @@
+DELETE FROM m183_lb2.users WHERE delete_date <= NOW() - INTERVAL 1 MONTH AND to_delete = 1;

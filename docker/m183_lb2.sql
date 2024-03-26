@@ -67,7 +67,9 @@ CREATE TABLE `tasks` (
 CREATE TABLE `users` (
   `ID` bigint(20) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) NOT NULL,
+  `to_delete` boolean NOT NULL,
+  `delete_date` DATE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
@@ -119,6 +121,27 @@ ALTER TABLE `tasks`
 --
 ALTER TABLE `users`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+
+-- Adding a foreign key constraint to relate tasks with users
+ALTER TABLE `tasks`
+    ADD CONSTRAINT `fk_user_tasks`
+        FOREIGN KEY (`userID`) REFERENCES `users` (`ID`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
+
+-- Adding a foreign key constraint to relate permissions with users
+ALTER TABLE `permissions`
+    ADD CONSTRAINT `fk_user_permissions`
+        FOREIGN KEY (`userID`) REFERENCES `users` (`ID`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
+
+-- Adding a foreign key constraint to relate permissions with roles
+ALTER TABLE `permissions`
+    ADD CONSTRAINT `fk_role_permissions`
+        FOREIGN KEY (`roleID`) REFERENCES `roles` (`ID`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
@@ -129,8 +152,8 @@ insert into roles (ID, title) values (2, 'User');
 insert into roles (ID, title) values (1, 'Admin');
 
 
-insert into users (ID, username, password) values (1, 'admin1', 'Awesome.Pass34');
-insert into users (ID, username, password) values (2, 'user1', 'Amazing.Pass23');
+insert into users (ID, username, password, to_delete, delete_date) values (1, 'admin1', 'Awesome.Pass34', 'false', Null);
+insert into users (ID, username, password, to_delete, delete_date) values (2, 'user1', 'Amazing.Pass23', 'false', NULL);
 
 insert into permissions(ID, userID, roleID) values(null, 1, 1);
 insert into permissions(ID, userID, roleID) values(null, 2, 2);

@@ -7,6 +7,7 @@ if (!isset($_COOKIE['username'])) {
 }
 
 require_once 'fw/header.php';
+
 ?>
 <h2>Welcome, <?php echo $_COOKIE['username']; ?>!</h2>
 

@@ -1,4 +1,5 @@
 <?php
+    require_once '../fw/header.php';
     if (!isset($_COOKIE['username'])) {
         header("Location: ../login.php");
         exit();
@@ -19,8 +20,6 @@
     $stmt->store_result();
     // Bind the result variables
     $stmt->bind_result($db_id, $db_username, $db_password, $db_title);
-
-    require_once '../fw/header.php';
 ?>
 <h2>User List</h2>
 
