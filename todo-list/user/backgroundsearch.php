@@ -1,10 +1,10 @@
 <?php
-    if (!isset($_COOKIE['username'])) {
-        header("Location: ../login.php");
-        exit();
-    }
+if (!isset($_COOKIE['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
 
-    include 'fw/db.php';
+    require_once 'fw/db.php';
 ?>
 <section id="search">
     <h2>Search</h2>
@@ -24,32 +24,32 @@
         <div id="result" class="hidden"></div>
     </div>
     <script>
-    $(document).ready(function () {
-        $('#form').validate({
-        rules: {
-            terms: {
-            required: true
-            }
-        },
-        messages: {
-            title: 'Please enter search terms.',
-        },
-        submitHandler: function (form) {
-            provider = $("#searchurl").val();
-            terms = $("#terms").val();
-            userid = <?php echo $_COOKIE["userid"] ?>;
-            $("#msg").show();
-            $("#result").html("");
-            $.post("search.php", { provider: provider, terms: terms, userid: userid }, function(data){
-                console.log(data);
-                $("#result").html(data);
-                $("#msg").hide(500);
-                $("#result").show(500);
+        $(document).ready(function () {
+            $('#form').validate({
+                rules: {
+                    terms: {
+                        required: true
+                    }
+                },
+                messages: {
+                    title: 'Please enter search terms.',
+                },
+                submitHandler: function (form) {
+                    provider = $("#searchurl").val();
+                    terms = $("#terms").val();
+                    userid = <?php echo $_COOKIE["userid"] ?>;
+                    $("#msg").show();
+                    $("#result").html("");
+                    $.post("search.php", { provider: provider, terms: terms, userid: userid }, function(data){
+                        console.log(data);
+                        $("#result").html(data);
+                        $("#msg").hide(500);
+                        $("#result").show(500);
+                    });
+                    return false;
+                    //form.submit();
+                }
             });
-            return false;
-            //form.submit();
-        }
         });
-    });
     </script>
 </section>

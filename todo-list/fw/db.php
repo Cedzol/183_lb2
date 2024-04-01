@@ -1,4 +1,6 @@
 <?php
+    $root = realpath($_SERVER["DOCUMENT_ROOT"]);
+    require_once "$root/vendor/autoload.php";
 
     function executeStatement($statement){
         $conn = getConnection();
@@ -22,4 +24,15 @@
 
         return $conn;
     }
+
+function runSQL(){
+    $commands = file_get_contents('delete_account_script.sql');
+    require_once 'fw/db.php';
+    $stmt = executeStatement($commands);
+}
+
+$cron = new Cron\CronExpression('@daily');
+if ($cron->isDue()){
+    runSQL();
+}
 ?>
