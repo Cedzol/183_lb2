@@ -1,28 +1,20 @@
 <?php
-    if (!isset($_COOKIE['username'])) {
+    if (!isset($_SESSION['username'])) {
         header("Location: ../login.php");
         exit();
     }
     require_once 'config.php';
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $userid = $_SESSION['userid'];
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    $userid = $_COOKIE['userid'];
-
-    // Prepare SQL statement to retrieve user from database
-    $stmt = $conn->prepare("select ID, title, state from tasks where UserID = $userid");
-    // Execute the statement
+    $conn = getConnection();
+    $stmt = $conn->prepare("select ID, title, state from tasks where UserID =?");
+    $stmt->bind_param("s", $userid);
     $stmt->execute();
-    // Store the result
     $stmt->store_result();
-    // Bind the result variables
     $stmt->bind_result($db_id, $db_title, $db_state);
 ?>
 <section id="list">
-    <a href="edit.php">Create Task</a>
+    <a href="create.php">Create Task</a>
     <table>
         <tr>
             <th>ID</th>

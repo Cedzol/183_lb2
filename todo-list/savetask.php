@@ -1,16 +1,20 @@
-<?php
-// Check if the user is logged in
-if (!isset($_COOKIE['userid'])) {
+<?php session_start();
+if (!isset($_SESSION['userid'])) {
     header("Location: /");
     exit();
 }
 $taskid = "";
 require_once 'fw/db.php';
-// see if the id exists in the database
+require_once 'logging/Log.php';
+$log = new Log();
 
 if (isset($_POST['id']) && strlen($_POST['id']) != 0){
     $taskid = $_POST["id"];
-    $stmt = executeStatement("select ID, title, state from tasks where ID = $taskid");
+    $conn = getConnection();
+    $stmt = $conn->prepare("select ID, title, state from tasks where ID = ?");
+    $stmt->bind_param("s", $taskid);
+    $stmt->execute();
+    $stmt->store_result();
     if ($stmt->num_rows == 0) {
         $taskid = "";
     }
@@ -20,13 +24,22 @@ require_once 'fw/header.php';
 if (isset($_POST['title']) && isset($_POST['state'])){
     $state = $_POST['state'];
     $title = $_POST['title'];
-    $userid = $_COOKIE['userid'];
+    $userid = $_SESSION['userid'];
 
+    $log->wh_log("task id: " . $taskid);
     if ($taskid == ""){
-        $stmt = executeStatement("insert into tasks (title, state, userID) values ('$title', '$state', '$userid')");
+        $conn = getConnection();
+        $log->wh_log("Save new task for user " . $userid);
+        $stmt = $conn->prepare("insert into tasks (title, state, userID) values (?, ?, ?)");
+        $stmt->bind_param("sss", $title, $state, $userid);
+        $stmt->execute();
     }
     else {
-        $stmt = executeStatement("update tasks set title = '$title', state = '$state' where ID = $taskid");
+        $conn = getConnection();
+        $log->wh_log("Save updated task " . $taskid ." for user " . $userid);
+        $stmt = $conn->prepare("update tasks set title = ?, state = ? where ID =?");
+        $stmt->bind_param("ssi", $title, $state, $taskid);
+        $stmt->execute();
     }
 
     echo "<span class='info info-success'>Update successfull</span>";

@@ -16,31 +16,24 @@ if (isset($_GET['id'])){
     $taskid = $_GET["id"];
     require_once 'fw/db.php';
     $conn = getConnection();
-    $stmt = $conn->prepare("select ID, title, userID, state from tasks where ID =?");
+    // Prepare SQL statement to retrieve user from database
+    $stmt = $conn->prepare("select ID, title, state from tasks where ID =?");
     $stmt->bind_param("s", $taskid);
     $stmt->execute();
     $stmt->store_result();
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($db_id, $db_title, $db_userId, $db_state);
+        $stmt->bind_result($db_id, $db_title, $db_state);
         $stmt->fetch();
         $title = $db_title;
         $state = $db_state;
-        if ($db_userId != $_SESSION['userid']){
-            header("Location: /");
-            exit();
-        }
     }
 }
 
 require_once 'fw/header.php';
 ?>
-
-<?php if (isset($_GET['id'])) { ?>
-    <h1>Edit Task</h1>
-<?php } ?>
+    <h1>Create Task</h1>
 
     <form id="form" method="post" action="savetask.php">
-        <input type="hidden" name="id" value="<?php echo $taskid ?>" />
         <div class="form-group">
             <label for="title">Description</label>
             <input type="text" class="form-control size-medium" name="title" id="title" value="<?php echo $title ?>">

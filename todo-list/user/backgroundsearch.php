@@ -1,9 +1,8 @@
 <?php
-if (!isset($_COOKIE['username'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
 }
-
     require_once 'fw/db.php';
 ?>
 <section id="search">
@@ -37,7 +36,7 @@ if (!isset($_COOKIE['username'])) {
                 submitHandler: function (form) {
                     provider = $("#searchurl").val();
                     terms = $("#terms").val();
-                    userid = <?php echo $_COOKIE["userid"] ?>;
+                    userid = <?php echo $_SESSION["userid"] ?>;
                     $("#msg").show();
                     $("#result").html("");
                     $.post("search.php", { provider: provider, terms: terms, userid: userid }, function(data){

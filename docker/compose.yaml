@@ -17,7 +17,8 @@ services:
     environment:
       - DBSERVER=m183-lb2-db
     ports:
-      - "80:80"
+      - "8000:80"
+      - "8443:443"
     volumes:
       - type: bind
         source: ./../todo-list

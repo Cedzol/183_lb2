@@ -4,9 +4,9 @@
         exit("Not enough information provided");
     }
 
-    $provider = $_POST["provider"];
-    $terms = $_POST["terms"];
-    $userid = $_POST["userid"];
+    $provider = htmlspecialchars($_POST["provider"]);
+    $terms = htmlspecialchars($_POST["terms"]);
+    $userid = htmlspecialchars($_POST["userid"]);
     
     sleep(1); // this is a long, long search!!
 
@@ -36,7 +36,6 @@
         curl_close($curl);
         return $result;
     }
-
 
     $theurl='http://localhost'.$provider.'?userid='.$userid.'&terms='.$terms;
     $get_data = callAPI('GET', $theurl, false);

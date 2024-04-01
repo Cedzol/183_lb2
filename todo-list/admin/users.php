@@ -1,25 +1,20 @@
-<?php
-    require_once '../fw/header.php';
-    if (!isset($_COOKIE['username'])) {
+<?php session_start();
+    if (!isset($_SESSION['username'])) {
         header("Location: ../login.php");
         exit();
     }
-
-    require_once '../config.php';
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    if ($_SESSION['role'] != 1){
+        header("Location: ../index.php");
+        exit();
     }
-    // Prepare SQL statement to retrieve user from database
-    $stmt = $conn->prepare("SELECT users.ID, users.username, users.password, roles.title FROM users inner join permissions on users.ID = permissions.userID inner join roles on permissions.roleID = roles.ID order by username");
-    // Execute the statement
+    require_once '../fw/header.php';
+
+    $conn = getConnection();
+    $stmt = $conn->prepare("SELECT users.ID, users.username, roles.title FROM users inner join permissions on users.ID = permissions.userID inner join roles on permissions.roleID = roles.ID order by ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
-    // Store the result
     $stmt->store_result();
-    // Bind the result variables
-    $stmt->bind_result($db_id, $db_username, $db_password, $db_title);
+    $stmt->bind_result($db_id, $db_username, $db_title);
 ?>
 <h2>User List</h2>
 
@@ -32,7 +27,7 @@
     <?php
         // Fetch the result
         while ($stmt->fetch()) {
-            echo "<tr><td>$db_id</td><td>$db_username</td><td>$db_title</td><input type='hidden' name='password' value='$db_password' /></tr>";
+            echo "<tr><td>$db_id</td><td>$db_username</td><td>$db_title</td></tr>";
         }
     ?>
 </table>

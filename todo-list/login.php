@@ -1,50 +1,50 @@
-<?php
+<?php session_start();
 require_once 'config.php';
+require_once 'fw/db.php';
+require_once 'logging/Log.php';
 
-// Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['username']) && isset($_GET['password'])) {
-    // Get username and password from the form
-    $username = $_GET['username'];
-    $password = $_GET['password'];
+$log = new Log();
 
-    // Connect to the database
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    // Prepare SQL statement to retrieve user from database
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username='$username'");
+    $conn = getConnection();
 
-    // Execute the statement
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
+
+    $stmt->bind_param("s", $username);
+
     $stmt->execute();
-    // Store the result
+
+    $log->wh_log("Login request using userId $username and ip " . $_SERVER['REMOTE_ADDR']);
+
     $stmt->store_result();
-    // Check if username exists
+
     if ($stmt->num_rows > 0) {
-        // Bind the result variables
         $stmt->bind_result($db_id, $db_username, $db_password);
-        // Fetch the result
         $stmt->fetch();
-        // Verify the password
-        if ($password == $db_password) {
-            // Password is correct, store username in session
-            setcookie("username", $username, -1, "/"); // 86400 = 1 day
-            setcookie("userid", $db_id, -1, "/"); // 86400 = 1 day
-            // Redirect to index.php
+        if (password_verify($password, $db_password)) {
+            $stmt = $conn->prepare("select users.id userid, roles.id roleid, roles.title rolename from users inner join permissions on users.id = permissions.userid inner join roles on permissions.roleID = roles.id where userid =?");
+            $stmt->bind_param("s", $db_id);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($db_userid, $db_roleid, $db_rolename);
+            $stmt->fetch();
+
+            $_SESSION["username"] = $username;
+            $_SESSION["userid"] = $db_id;
+            $_SESSION["role"] = $db_roleid;
             header("Location: index.php");
+            $log->wh_log("Login request successful for userId $username and ip " . $_SERVER['REMOTE_ADDR']);
             exit();
         } else {
-            // Password is incorrect
-            echo "Incorrect password";
+            $log->wh_log("Login request failed for userId $username and ip " . $_SERVER['REMOTE_ADDR']);
         }
     } else {
-        // Username does not exist
-        echo "Username does not exist";
+        $log->wh_log("Login request failed username not found $username " . $_SERVER['REMOTE_ADDR']);
     }
 
-    // Close statement
     $stmt->close();
 }
 require_once 'fw/header.php';
@@ -52,8 +52,7 @@ require_once 'fw/header.php';
 
     <h2>Login</h2>
 
-
-    <form id="form" method="get" action="<?php $_SERVER["PHP_SELF"]; ?>">
+    <form id="form" method="post" action="<?php htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control size-medium" name="username" id="username">
