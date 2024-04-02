@@ -1,26 +1,20 @@
 <?php
 require_once 'db.php';
-$root = realpath($_SERVER["DOCUMENT_ROOT"]);
-require_once "$root/logging/LOG.php";
 
 if (isset($_SESSION['userid'])) {
     $id = $_SESSION['userid'];
 }
-$log = new Log();
 
-$userid = $_SESSION['userid'];
 if (array_key_exists('confirmDelete', $_POST)){
-$conn = getConnection();
-$stmt = $conn->prepare("UPDATE users SET to_delete = true, delete_date = CURRENT_DATE WHERE ID = ?");
-$stmt->bind_param("s", $userid);
-$stmt->execute();
-if ($stmt) {
-    $log->wh_log("Updated user for deletion userid " . $userid . "at " . date("Y-m-d H:i:s "));
-    header("Location: logout.php");
-    exit();
-} else {
-    $log->wh_log("Failed to update user for deletion userid " . $userid);
-}
+    $userid = $_SESSION['userid'];
+    $conn = getConnection();
+    $stmt = $conn->prepare("UPDATE users SET to_delete = true, delete_date = CURRENT_DATE WHERE ID = ?");
+    $stmt->bind_param("s", $userid);
+    $stmt->execute();
+    if ($stmt) {
+        header("Location: logout.php");
+        exit();
+    }
 }
 
 

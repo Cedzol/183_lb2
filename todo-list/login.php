@@ -1,7 +1,7 @@
 <?php session_start();
 require_once 'config.php';
 require_once 'fw/db.php';
-require_once 'logging/Log.php';
+require_once 'Log.php';
 
 $log = new Log();
 
@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
 
     $conn = getConnection();
 
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=?");
+    $stmt = $conn->prepare("SELECT id, username, password, to_delete FROM users WHERE username=?");
 
     $stmt->bind_param("s", $username);
 
@@ -22,9 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($db_id, $db_username, $db_password);
+        $stmt->bind_result($db_id, $db_username, $db_password, $db_to_delete);
         $stmt->fetch();
-        if (password_verify($password, $db_password)) {
+        if (password_verify($password, $db_password) && !$db_to_delete) {
             $stmt = $conn->prepare("select users.id userid, roles.id roleid, roles.title rolename from users inner join permissions on users.id = permissions.userid inner join roles on permissions.roleID = roles.id where userid =?");
             $stmt->bind_param("s", $db_id);
             $stmt->execute();
