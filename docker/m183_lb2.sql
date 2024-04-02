@@ -152,8 +152,8 @@ insert into roles (ID, title) values (2, 'User');
 insert into roles (ID, title) values (1, 'Admin');
 
 
-insert into users (ID, username, password, to_delete, delete_date) values (1, 'admin1', 'Awesome.Pass34', 'false', Null);
-insert into users (ID, username, password, to_delete, delete_date) values (2, 'user1', 'Amazing.Pass23', 'false', NULL);
+insert into users (ID, username, password, to_delete, delete_date) values (1, 'admin1', '$2y$10$0kUb4I3Ja0AJWGLsDBg7N.pf1kv0NVlZhFY.vKz9tY.QHy.wDbb3e', 'false', Null);
+insert into users (ID, username, password, to_delete, delete_date) values (2, 'user1', '$2y$10$s/ECsRxoC7G2DzJm.7IOzOElI7Jl57mktQtLKW4leyfPO8jxPyRxi', 'false', NULL);
 
 insert into permissions(ID, userID, roleID) values(null, 1, 1);
 insert into permissions(ID, userID, roleID) values(null, 2, 2);
