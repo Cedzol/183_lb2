@@ -1,44 +1,45 @@
-<?php
+<?php session_start();
 
-    if (!isset($_POST["provider"]) || !isset($_POST["terms"]) || !isset($_POST["userid"])){
-        exit("Not enough information provided");
+if (!isset($_POST["provider"]) || !isset($_POST["terms"]) || !isset($_SESSION["userid"])){
+    exit("Not enough information provided");
+}
+
+$provider = htmlspecialchars($_POST["provider"]);
+$terms = htmlspecialchars($_POST["terms"]);
+$userid = $_SESSION["userid"];
+
+sleep(1); // this is a long, long search!!
+
+function callAPI($method, $url, $data){
+    $curl = curl_init();
+    switch ($method){
+        case "POST":
+            curl_setopt($curl, CURLOPT_POST, 1);
+            if ($data)
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            break;
+        case "PUT":
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            if ($data)
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            break;
+        default:
+            if ($data)
+                $url = sprintf("%s?%s", $url, http_build_query($data));
     }
+    // OPTIONS:
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    // EXECUTE:
+    $result = curl_exec($curl);
+    if(!$result){$result = "No results found!";}
+    curl_close($curl);
+    return $result;
+}
 
-    $provider = htmlspecialchars($_POST["provider"]);
-    $terms = htmlspecialchars($_POST["terms"]);
-    $userid = htmlspecialchars($_POST["userid"]);
-    
-    sleep(1); // this is a long, long search!!
 
-    function callAPI($method, $url, $data){
-        $curl = curl_init();
-        switch ($method){
-           case "POST":
-              curl_setopt($curl, CURLOPT_POST, 1);
-              if ($data)
-                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-              break;
-           case "PUT":
-              curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-              if ($data)
-                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);			 					
-              break;
-           default:
-              if ($data)
-                 $url = sprintf("%s?%s", $url, http_build_query($data));
-        }
-        // OPTIONS:
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        // EXECUTE:
-        $result = curl_exec($curl);
-        if(!$result){$result = "No results found!";}
-        curl_close($curl);
-        return $result;
-    }
+$theurl='https://localhost'.$provider.'?terms='.$terms;
+$get_data = callAPI('GET', $theurl, false);
 
-    $theurl='http://localhost'.$provider.'?userid='.$userid.'&terms='.$terms;
-    $get_data = callAPI('GET', $theurl, false);
-
-    echo $get_data;
+echo $get_data;
 ?>

@@ -1,17 +1,17 @@
-<?php
+<?php session_start();
+require_once '../../fw/db.php';
 
-if (!isset($_GET["userid"]) || !isset($_GET["terms"])){
+if (!isset($_SESSION["userid"]) || !isset($_GET["terms"])){
     die("Not enough information to search");
 }
 
-$userid = $_GET["userid"];
+$userid = $_SESSION["userid"];
 $terms = $_GET["terms"];
 
-require_once '../../fw/db.php';
 $conn = getConnection();
-$stmt = $conn->prepare("select ID, title, state from tasks where userID =? and title like %?%");
+$stmt = $conn->prepare("select ID, title, state from tasks where userID =? and title like '%$terms%'");
 // Execute the statement
-$stmt->bind_param("ss", $userid, $terms);
+$stmt->bind_param("s", $userid);
 $stmt->execute();
 // Store the result
 $stmt->store_result();

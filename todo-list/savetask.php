@@ -5,7 +5,7 @@ if (!isset($_SESSION['userid'])) {
 }
 $taskid = "";
 require_once 'fw/db.php';
-require_once 'logging/Log.php';
+require_once 'Log.php';
 $log = new Log();
 
 if (isset($_POST['id']) && strlen($_POST['id']) != 0){

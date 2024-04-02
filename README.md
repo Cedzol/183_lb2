@@ -15,3 +15,15 @@ localhost:3306
 root
 
 Some.Real.Secr3t
+
+Das Datenbank init sql wird beim erstellen des DB containers ausgeführt.
+
+### Composer
+
+Damit das Projekt läuft muss composer verwendet werden.
+Als erstes muss dieser Heruntergeladen/installiert werden. https://getcomposer.org/download/
+Es gibt einen Windows installer und für Mac OS kann mit brew gearbeitet werden.
+
+Danach muss man im Projekt im Verzeichnis todo-list `composer install` ausführen. Danach sollte das Projekt laufen.
+
+Die Seite läuft auf https://localhost:8443/

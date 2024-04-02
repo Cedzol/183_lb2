@@ -1,0 +1,12 @@
+- TLS (https)
+- Sessions statt cookies. In den Cookies konnte die Id des Users manipuliert werden
+- Admin Seite Role Check
+- Prepare für SQL statements zur SQL Injection vermeidung
+- Password aus SQL entfernt damit dies nicht auf der Seite geladen wird
+- Ersetzte in jeder Datenbank Abfrage html special chars um XSS zu verhindern
+- Role in header.php wird über die Session geholt statt über eine Abfrage
+- Logging hinzugefügt
+- Überprüft ob task id von url in edit.php dem user in der session gehört
+- Passwörter in der Datenbank gehasht statt ckeartext
+- Session wird nach logout zerstört
+- User id wird nurnoch aus session geholt
