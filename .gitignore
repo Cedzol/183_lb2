@@ -1,0 +1,4 @@
+/todo-list/vendor
+/todo-list/composer.lock
+/todo-list/logs
+.idea/
