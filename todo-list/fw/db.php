@@ -24,12 +24,14 @@
 
         return $conn;
     }
-
-function runSQL(){
-    $commands = file_get_contents('delete_account_script.sql');
-    require_once 'fw/db.php';
-    $stmt = executeStatement($commands);
-}
+    
+    function runSQL(){
+        $commands = file_get_contents('delete_account_script.sql');
+        require_once 'fw/db.php';
+        $stmt = executeStatement($commands);
+        // Check if the statement was executed successfully
+        return $stmt !== false;
+    }
 
 $cron = new Cron\CronExpression('@daily');
 if ($cron->isDue()){
